@@ -12,6 +12,7 @@ from ai_data_analyst.database import (
     SQLiteDatabase,
     SQLiteDatabaseError,
 )
+from ai_data_analyst.errors import AppError
 from ai_data_analyst.interpretation import explain_result
 from ai_data_analyst.models import AnalysisIntent, AnalysisRequest, ChartType
 from ai_data_analyst.observability import configure_logging
@@ -130,7 +131,7 @@ if st.button("Analyse", type="primary", disabled=not question.strip()):
                 st.dataframe(result.analysis.rows, use_container_width=True)
                 if result.chart is not None:
                     st.plotly_chart(result.chart.figure, use_container_width=True)
-        except (ValueError, KeyError) as error:
+        except (AppError, ValueError, KeyError) as error:
             st.error(f"I could not answer that question: {error}")
             st.info(
                 "Try mentioning a metric and grouping column, for example: "

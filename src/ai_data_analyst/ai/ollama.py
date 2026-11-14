@@ -5,11 +5,12 @@ from dataclasses import dataclass
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
+from ai_data_analyst.errors import AIProviderError
 from ai_data_analyst.models import AnalysisRequest
 from ai_data_analyst.observability import get_logger
 
 
-class OllamaError(RuntimeError):
+class OllamaError(AIProviderError):
     """Raised when the local Ollama service cannot produce a valid request."""
 
 

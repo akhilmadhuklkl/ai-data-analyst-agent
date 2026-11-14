@@ -6,8 +6,10 @@ from typing import Any
 
 import pandas as pd
 
+from ai_data_analyst.errors import InputDataError
 
-class DataValidationError(ValueError):
+
+class DataValidationError(InputDataError):
     """Raised when an uploaded dataset cannot be analysed safely."""
 
 

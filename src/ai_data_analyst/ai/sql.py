@@ -5,10 +5,11 @@ from dataclasses import dataclass
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-from ai_data_analyst.database import SQLiteDatabaseError, validate_read_only_sql
+from ai_data_analyst.database import validate_read_only_sql
+from ai_data_analyst.errors import AIProviderError, DatabaseFailure
 
 
-class SQLGenerationError(RuntimeError):
+class SQLGenerationError(AIProviderError):
     """Raised when SQL generation or validation fails."""
 
 
@@ -48,7 +49,7 @@ class OllamaSQLGenerator:
                 response_payload = json.loads(response.read().decode("utf-8"))
             sql = json.loads(response_payload["message"]["content"])["sql"]
             validate_read_only_sql(sql)
-        except SQLiteDatabaseError as error:
+        except DatabaseFailure as error:
             raise SQLGenerationError(f"Generated SQL was rejected: {error}") from error
         except (OSError, URLError, KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
             raise SQLGenerationError("Ollama returned invalid SQL") from error

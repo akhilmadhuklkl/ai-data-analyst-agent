@@ -126,6 +126,8 @@ The reusable `ApplicationServices` layer keeps UI code separate from analysis be
 
 The application uses namespaced logging for analysis, Ollama, and database lifecycle events. Logs record safe metadata such as row counts and intent; prompts, SQL text, uploaded data, and secrets are not logged.
 
+Expected failures use a shared error taxonomy covering input data, analysis, AI providers, database operations, and unsafe SQL. This allows the UI and future API to return clear user-facing messages without exposing internal tracebacks.
+
 ## Roadmap
 
 1. Project foundation and development standards

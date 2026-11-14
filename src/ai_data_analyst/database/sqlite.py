@@ -6,8 +6,10 @@ from pathlib import Path
 
 import pandas as pd
 
+from ai_data_analyst.errors import DatabaseFailure, UnsafeQueryError
 
-class SQLiteDatabaseError(ValueError):
+
+class SQLiteDatabaseError(DatabaseFailure):
     """Raised when a SQLite operation is invalid or fails."""
 
 
@@ -95,8 +97,8 @@ def validate_read_only_sql(sql: str) -> None:
     if not normalized:
         raise SQLiteDatabaseError("SQL query must not be empty")
     if ";" in normalized.rstrip(";"):
-        raise SQLiteDatabaseError("Only one SQL statement is allowed")
+        raise UnsafeQueryError("Only one SQL statement is allowed")
     if not normalized.startswith(("select", "with", "explain")):
-        raise SQLiteDatabaseError("Only read-only SELECT, WITH, and EXPLAIN queries are allowed")
+        raise UnsafeQueryError("Only read-only SELECT, WITH, and EXPLAIN queries are allowed")
     if re.search(r"\b(insert|update|delete|drop|alter|create|replace|attach|detach)\b", normalized):
-        raise SQLiteDatabaseError("Write and schema-modifying SQL is not allowed")
+        raise UnsafeQueryError("Write and schema-modifying SQL is not allowed")

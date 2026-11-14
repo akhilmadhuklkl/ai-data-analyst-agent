@@ -5,10 +5,11 @@ from typing import Any
 
 import pandas as pd
 
+from ai_data_analyst.errors import AnalysisFailure
 from ai_data_analyst.models import AnalysisIntent, AnalysisRequest
 
 
-class AnalysisError(ValueError):
+class AnalysisError(AnalysisFailure):
     """Raised when a request cannot be executed against a dataset."""
 
 

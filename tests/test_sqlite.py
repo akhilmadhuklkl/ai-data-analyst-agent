@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from ai_data_analyst.database import SQLiteDatabase, SQLiteDatabaseError
+from ai_data_analyst.errors import DatabaseFailure
 
 
 @pytest.fixture
@@ -34,7 +35,7 @@ def test_query_returns_dataframe(database) -> None:
 
 @pytest.mark.parametrize("sql", ["DELETE FROM sales", "DROP TABLE sales", "SELECT 1; SELECT 2"])
 def test_query_rejects_unsafe_sql(database, sql) -> None:
-    with pytest.raises(SQLiteDatabaseError):
+    with pytest.raises(DatabaseFailure):
         database.query(sql)
 
 
