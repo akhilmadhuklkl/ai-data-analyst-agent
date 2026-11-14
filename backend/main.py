@@ -24,6 +24,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+
+
+async def _read_upload(file: UploadFile, allowed_extensions: set[str]) -> bytes:
+    """Validate an upload name and size before handing it to a parser."""
+
+    filename = file.filename or ""
+    extension = Path(filename).suffix.lower()
+    if extension not in allowed_extensions:
+        allowed = ", ".join(sorted(allowed_extensions))
+        raise ValueError(f"Unsupported file type. Expected: {allowed}")
+    content = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise ValueError("File is too large. The maximum upload size is 50 MB.")
+    if not content:
+        raise ValueError("The uploaded file is empty.")
+    return content
+
 
 @app.get("/health")
 def health() -> dict[str, str]:
@@ -63,7 +81,7 @@ async def analyze_csv(
     use_local_ai: bool = Form(False),
 ) -> dict:
     try:
-        dataframe = pd.read_csv(BytesIO(await file.read()))
+        dataframe = pd.read_csv(BytesIO(await _read_upload(file, {".csv"})))
         result = services.analyze_dataframe(dataframe, question, use_local_ai=use_local_ai)
         return result.to_dict()
     except (AppError, pd.errors.EmptyDataError, ValueError) as error:
@@ -78,7 +96,9 @@ async def analyze_sqlite(
 ) -> dict:
     database = None
     try:
-        database = SQLiteDatabase.from_bytes(await file.read())
+        database = SQLiteDatabase.from_bytes(
+            await _read_upload(file, {".db", ".sqlite", ".sqlite3"})
+        )
         result = services.analyze_database(database, question, table_name=table_name)
         return {
             "sql": result.sql,
@@ -97,7 +117,9 @@ async def analyze_sqlite(
 async def inspect_sqlite(file: UploadFile = File(...)) -> dict:
     database = None
     try:
-        database = SQLiteDatabase.from_bytes(await file.read())
+        database = SQLiteDatabase.from_bytes(
+            await _read_upload(file, {".db", ".sqlite", ".sqlite3"})
+        )
         schema = database.schema()
         return {"tables": list(schema), "schema": schema}
     except (AppError, SQLiteDatabaseError, ValueError) as error:

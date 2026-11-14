@@ -19,3 +19,5 @@ def test_sample_database_endpoint_returns_sqlite() -> None:
     response = sample_database()
     assert response.media_type == "application/x-sqlite3"
     assert response.body.startswith(b"SQLite format 3")
+
+
