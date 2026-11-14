@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
-  reporter: "list",
+  reporter: process.env.CI ? [["list"], ["html", { outputFolder: "playwright-report", open: "never" }]] : "list",
   use: { baseURL: "http://localhost:3000", trace: "on-first-retry" },
   webServer: process.env.CI
     ? [
