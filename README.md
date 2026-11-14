@@ -94,6 +94,10 @@ docker compose up --build
 
 Open [http://localhost:3000](http://localhost:3000). Stop the services with `docker compose down`.
 
+## Environment configuration
+
+For the frontend, copy `frontend/.env.example` to `frontend/.env.local` and set `NEXT_PUBLIC_API_URL` to the API URL. For the backend, copy `.env.example` to `.env` and configure `CORS_ORIGINS` and `MAX_UPLOAD_MB`. In hosted environments, set these values through the platform’s environment-variable settings instead of committing `.env` files.
+
 Application code lives in `src/ai_data_analyst/`. Tests live in `tests/`.
 
 ## Current data workflow

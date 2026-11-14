@@ -2,6 +2,7 @@
 
 import sqlite3
 from io import BytesIO
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -19,12 +20,19 @@ services = ApplicationServices()
 app = FastAPI(title="AI Data Analyst Agent API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB", "50")) * 1024 * 1024
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+    ).split(",")
+    if origin.strip()
+]
 
 
 async def _read_upload(file: UploadFile, allowed_extensions: set[str]) -> bytes:
