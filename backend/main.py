@@ -1,12 +1,13 @@
 """HTTP API for the AI Data Analyst Agent."""
 
+import sqlite3
 from io import BytesIO
 from pathlib import Path
 
 import pandas as pd
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 from ai_data_analyst.application import ApplicationServices
 from ai_data_analyst.database import SQLiteDatabase, SQLiteDatabaseError
@@ -36,6 +37,23 @@ def sample_data() -> FileResponse:
         media_type="text/csv",
         filename="sample_sales.csv",
     )
+
+
+@app.get("/sample-database")
+def sample_database() -> Response:
+    """Return a generated SQLite database for local demos."""
+    sample_path = Path(__file__).resolve().parent.parent / "examples" / "sample_sales.csv"
+    dataframe = pd.read_csv(sample_path)
+    connection = sqlite3.connect(":memory:")
+    try:
+        dataframe.to_sql("sales", connection, index=False, if_exists="replace")
+        return Response(
+            connection.serialize(),
+            media_type="application/x-sqlite3",
+            headers={"Content-Disposition": "attachment; filename=sample_sales.sqlite"},
+        )
+    finally:
+        connection.close()
 
 
 @app.post("/analyze/csv")
