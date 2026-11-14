@@ -54,6 +54,8 @@ The data layer currently supports CSV files. It validates the file, loads it int
 - Missing-value counts
 - A small preview of the records
 
+The analysis layer also defines a validated `AnalysisRequest`. This is the internal contract that will connect natural-language questions to SQL, Python, and chart tools.
+
 ## Roadmap
 
 1. Project foundation and development standards

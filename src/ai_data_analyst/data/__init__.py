@@ -1,8 +1,8 @@
 """Data ingestion and profiling utilities."""
 
 from ai_data_analyst.data.csv_loader import (
-    DataValidationError,
     DatasetProfile,
+    DataValidationError,
     load_csv,
     profile_dataframe,
 )
