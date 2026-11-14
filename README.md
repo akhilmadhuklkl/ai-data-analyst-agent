@@ -62,6 +62,8 @@ The visualization layer converts analysis results into serializable Plotly figur
 
 The first natural-language interpreter supports common rule-based questions involving summaries, grouped metrics, charts, top-N limits, and trends over time. It produces the same validated `AnalysisRequest` used by the analysis service.
 
+The end-to-end `run_analysis` pipeline now connects interpretation, deterministic analysis, and optional chart generation into one structured response.
+
 ## Roadmap
 
 1. Project foundation and development standards
