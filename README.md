@@ -81,6 +81,8 @@ The interface also includes a built-in sample sales dataset, so you can try the 
 
 Ollama can provide local, no-API-key language-model interpretation. The project includes an `OllamaInterpreter` that requests structured analysis instructions and validates them as an `AnalysisRequest`. Calculations still run through the deterministic analysis service.
 
+The interface lets you choose between the fast rule-based interpreter and the local Ollama interpreter. Both use the same downstream analysis and chart pipeline.
+
 ## Roadmap
 
 1. Project foundation and development standards

@@ -1,5 +1,6 @@
 """End-to-end orchestration for the current deterministic analysis workflow."""
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -9,6 +10,8 @@ from ai_data_analyst.analysis import AnalysisResult, analyze
 from ai_data_analyst.interpreter import interpret_question
 from ai_data_analyst.models import AnalysisRequest
 from ai_data_analyst.visualization import ChartResult, create_chart
+
+RequestInterpreter = Callable[[str, list[str]], AnalysisRequest]
 
 
 @dataclass(frozen=True)
@@ -29,10 +32,14 @@ class PipelineResult:
         }
 
 
-def run_analysis(dataframe: pd.DataFrame, question: str) -> PipelineResult:
+def run_analysis(
+    dataframe: pd.DataFrame,
+    question: str,
+    interpreter: RequestInterpreter | None = None,
+) -> PipelineResult:
     """Interpret and execute a question against a dataframe."""
 
-    request = interpret_question(question, dataframe.columns.tolist())
+    request = (interpreter or interpret_question)(question, dataframe.columns.tolist())
     analysis_result = analyze(dataframe, request)
     chart = (
         create_chart(analysis_result, request.chart_type)

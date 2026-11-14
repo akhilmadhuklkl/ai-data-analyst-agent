@@ -9,3 +9,4 @@ def test_streamlit_entrypoint_exists() -> None:
     assert "run_analysis" in app_path.read_text(encoding="utf-8")
     assert "Use sample dataset" in app_path.read_text(encoding="utf-8")
     assert "Show revenue by region" in app_path.read_text(encoding="utf-8")
+    assert "Local AI with Ollama" in app_path.read_text(encoding="utf-8")

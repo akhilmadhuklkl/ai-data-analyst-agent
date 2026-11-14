@@ -24,7 +24,7 @@ class FakeResponse:
                             "metric_column": "revenue",
                             "group_by_column": "region",
                             "chart_type": "bar",
-                            "result_limit": 20,
+                            "result_limit": "20",
                         }
                     )
                 }

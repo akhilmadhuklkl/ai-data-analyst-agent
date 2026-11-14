@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from ai_data_analyst.ai import OllamaInterpreter
 from ai_data_analyst.data import DataValidationError, profile_dataframe
 from ai_data_analyst.pipeline import run_analysis
 
@@ -12,6 +13,13 @@ st.set_page_config(page_title="AI Data Analyst Agent", page_icon="📊", layout=
 
 st.title("📊 AI Data Analyst Agent")
 st.caption("Upload a CSV, ask a question in plain English, and explore the result.")
+
+interpreter_choice = st.radio(
+    "Question interpreter",
+    ["Rule-based (fast)", "Local AI with Ollama"],
+    horizontal=True,
+    help="The local AI option uses the Ollama model installed on this computer.",
+)
 
 data_source = st.radio(
     "Choose a data source",
@@ -62,7 +70,12 @@ st.caption("Try one of these: " + " · ".join(question_examples))
 if st.button("Analyse", type="primary", disabled=not question.strip()):
     with st.spinner("Analysing your data..."):
         try:
-            result = run_analysis(dataframe, question)
+            interpreter = (
+                OllamaInterpreter().interpret
+                if interpreter_choice == "Local AI with Ollama"
+                else None
+            )
+            result = run_analysis(dataframe, question, interpreter=interpreter)
         except (ValueError, KeyError) as error:
             st.error(f"I could not answer that question: {error}")
             st.info(

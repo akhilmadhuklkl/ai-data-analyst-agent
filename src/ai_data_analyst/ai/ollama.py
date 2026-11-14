@@ -34,7 +34,9 @@ class OllamaInterpreter:
                         "You convert data questions into JSON. Return only JSON with these keys: "
                         "question, intent, metric_column, group_by_column, chart_type, "
                         "result_limit. "
-                        f"Valid columns are: {columns}. Valid intents: summary, aggregation, "
+                        f"Valid columns are: {columns}. For aggregation, metric_column must be "
+                        "the numeric measure and group_by_column must be the category. "
+                        "Valid intents: summary, aggregation, "
                         "trend, comparison, visualization. Valid chart types: bar, line, "
                         "scatter, histogram, "
                         "table, or null. Use null for unknown optional fields."
@@ -57,6 +59,13 @@ class OllamaInterpreter:
 
         try:
             content = response_payload["message"]["content"]
-            return AnalysisRequest.from_dict(json.loads(content))
+            values = json.loads(content)
+            try:
+                values["result_limit"] = int(values.get("result_limit", 20))
+            except (TypeError, ValueError):
+                values["result_limit"] = 20
+            if values.get("chart_type") in {"", "none", "null"}:
+                values["chart_type"] = None
+            return AnalysisRequest.from_dict(values)
         except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
             raise OllamaError("Ollama returned an invalid analysis request") from error
