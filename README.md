@@ -18,6 +18,26 @@ This project demonstrates a production-minded AI data workflow: local LLM interp
 
 See the [architecture document](docs/architecture.md) for the system design and safety boundaries.
 
+The current `app.py` Streamlit interface is intentionally retained as a legacy backup while the new Next.js + FastAPI interface is developed.
+
+## New web interface
+
+Start the backend:
+
+```powershell
+python -m uvicorn backend.main:app --reload --port 8000
+```
+
+Install and start the frontend:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). The Streamlit backup remains available through `python -m streamlit run app.py`.
+
 ## Project status
 
 🚧 In active development. Deployment will be added in a later phase.

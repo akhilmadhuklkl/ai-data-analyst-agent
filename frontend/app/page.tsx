@@ -1,0 +1,53 @@
+"use client";
+
+import { useState } from "react";
+import { ArrowUpRight, BarChart3, Database, FileSpreadsheet, Sparkles, Upload } from "lucide-react";
+
+type Result = { explanation?: string; analysis?: { columns: string[]; rows: Record<string, unknown>[] }; sql?: string; columns?: string[]; rows?: Record<string, unknown>[] };
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
+
+export default function Home() {
+  const [source, setSource] = useState<"csv" | "sqlite">("csv");
+  const [file, setFile] = useState<File | null>(null);
+  const [question, setQuestion] = useState("Show revenue by region");
+  const [useAI, setUseAI] = useState(true);
+  const [result, setResult] = useState<Result | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function analyze() {
+    if (!file || !question.trim()) return;
+    setLoading(true); setError("");
+    const form = new FormData(); form.append("file", file); form.append("question", question);
+    if (source === "csv") form.append("use_local_ai", String(useAI));
+    try {
+      const response = await fetch(`${API_URL}/analyze/${source}`, { method: "POST", body: form });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.detail ?? "Analysis failed");
+      setResult(payload);
+    } catch (err) { setError(err instanceof Error ? err.message : "Analysis failed"); }
+    finally { setLoading(false); }
+  }
+
+  const columns = result?.analysis?.columns ?? result?.columns ?? [];
+  const rows = result?.analysis?.rows ?? result?.rows ?? [];
+
+  return <main className="shell">
+    <nav className="nav"><div className="brand"><span className="brand-mark"><Sparkles size={17} /></span> NEXUS <em>ANALYST</em></div><span className="status"><i /> LOCAL WORKSPACE</span></nav>
+    <section className="hero"><div className="eyebrow">INTELLIGENCE FOR YOUR DATA <ArrowUpRight size={14} /></div><h1>Ask better questions.<br /><span>Find clearer answers.</span></h1><p>Upload a dataset, connect your thinking, and let your local analyst uncover the signal.</p></section>
+    <section className="workspace">
+      <aside className="control-panel">
+        <div className="panel-label">01 / SOURCE</div>
+        <div className="source-tabs"><button className={source === "csv" ? "active" : ""} onClick={() => setSource("csv")}><FileSpreadsheet size={16} /> CSV FILE</button><button className={source === "sqlite" ? "active" : ""} onClick={() => setSource("sqlite")}><Database size={16} /> SQLITE</button></div>
+        <label className="dropzone"><Upload size={21} /><strong>{file ? file.name : "Drop your data here"}</strong><small>{file ? `${(file.size / 1024).toFixed(1)} KB ready` : "CSV, DB, SQLITE · MAX 50 MB"}</small><input type="file" accept={source === "csv" ? ".csv" : ".db,.sqlite,.sqlite3"} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></label>
+        <div className="panel-label question-label">02 / ASK</div><textarea value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="What would you like to understand?" />
+        {source === "csv" && <label className="toggle"><input type="checkbox" checked={useAI} onChange={(e) => setUseAI(e.target.checked)} /><span /> USE LOCAL AI INTERPRETER</label>}
+        <button className="analyze" disabled={!file || loading} onClick={analyze}>{loading ? "ANALYZING..." : "ANALYZE DATA"}<ArrowUpRight size={17} /></button>
+        {error && <div className="error">{error}</div>}
+      </aside>
+      <section className="results"><div className="panel-label">03 / INSIGHT</div>{!result && <div className="empty"><div className="empty-icon"><BarChart3 size={28} /></div><h2>Your analysis will appear here.</h2><p>Start with the sample question, or ask something specific about your own data.</p></div>}{result && <><div className="result-head"><div><h2>Analysis complete</h2><p>{result.explanation ?? "Your database query returned these results."}</p></div><span className="pill">{rows.length} ROWS</span></div>{result.sql && <details><summary>VIEW GENERATED SQL</summary><pre>{result.sql}</pre></details>}<div className="table-wrap"><table><thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column) => <td key={column}>{String(row[column] ?? "—")}</td>)}</tr>)}</tbody></table></div></>}</section>
+    </section>
+    <footer>BUILT FOR CURIOUS MINDS <span>·</span> LOCAL-FIRST ANALYTICS</footer>
+  </main>;
+}
