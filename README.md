@@ -56,6 +56,8 @@ The data layer currently supports CSV files. It validates the file, loads it int
 
 The analysis layer also defines a validated `AnalysisRequest`. This is the internal contract that will connect natural-language questions to SQL, Python, and chart tools.
 
+The deterministic analysis service can currently execute summary and grouped aggregation requests. It returns structured rows that can later be rendered as tables or charts.
+
 ## Roadmap
 
 1. Project foundation and development standards
