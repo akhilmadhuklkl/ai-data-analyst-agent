@@ -83,6 +83,8 @@ Ollama can provide local, no-API-key language-model interpretation. The project 
 
 The interface lets you choose between the fast rule-based interpreter and the local Ollama interpreter. Both use the same downstream analysis and chart pipeline.
 
+The pipeline now also produces a grounded natural-language explanation based only on the calculated result rows.
+
 ## Roadmap
 
 1. Project foundation and development standards

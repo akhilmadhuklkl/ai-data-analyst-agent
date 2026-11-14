@@ -7,6 +7,7 @@ from typing import Any
 import pandas as pd
 
 from ai_data_analyst.analysis import AnalysisResult, analyze
+from ai_data_analyst.interpretation import explain_result
 from ai_data_analyst.interpreter import interpret_question
 from ai_data_analyst.models import AnalysisRequest
 from ai_data_analyst.visualization import ChartResult, create_chart
@@ -20,6 +21,7 @@ class PipelineResult:
 
     request: AnalysisRequest
     analysis: AnalysisResult
+    explanation: str
     chart: ChartResult | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -28,6 +30,7 @@ class PipelineResult:
         return {
             "request": self.request.to_dict(),
             "analysis": self.analysis.to_dict(),
+            "explanation": self.explanation,
             "chart": self.chart.to_dict() if self.chart else None,
         }
 
@@ -46,4 +49,9 @@ def run_analysis(
         if request.chart_type is not None
         else None
     )
-    return PipelineResult(request=request, analysis=analysis_result, chart=chart)
+    return PipelineResult(
+        request=request,
+        analysis=analysis_result,
+        explanation=explain_result(request, analysis_result),
+        chart=chart,
+    )

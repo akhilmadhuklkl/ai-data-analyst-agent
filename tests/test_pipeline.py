@@ -24,6 +24,7 @@ def test_pipeline_runs_question_to_analysis_result() -> None:
         {"region": "USA", "total_revenue": 1500},
     ]
     assert result.chart is None
+    assert "India" in result.explanation
 
 
 def test_pipeline_adds_chart_when_requested() -> None:
@@ -39,6 +40,7 @@ def test_pipeline_adds_chart_when_requested() -> None:
     assert result.chart is not None
     assert result.chart.chart_type == "bar"
     json.dumps(result.to_dict())
+    assert "highest result" in result.explanation
 
 
 def test_pipeline_accepts_a_custom_ai_interpreter() -> None:

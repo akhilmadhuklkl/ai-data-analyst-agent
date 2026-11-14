@@ -85,6 +85,7 @@ if st.button("Analyse", type="primary", disabled=not question.strip()):
         else:
             st.subheader("Analysis result")
             st.caption(f"Interpreted as: **{result.request.intent.value}**")
+            st.info(result.explanation)
             st.dataframe(result.analysis.rows, use_container_width=True)
             if result.chart is not None:
                 st.plotly_chart(result.chart.figure, use_container_width=True)
