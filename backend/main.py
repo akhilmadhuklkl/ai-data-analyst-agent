@@ -72,3 +72,16 @@ async def analyze_sqlite(
     finally:
         if database is not None:
             database.close()
+
+
+@app.post("/inspect/sqlite")
+async def inspect_sqlite(file: UploadFile = File(...)) -> dict[str, list[str]]:
+    database = None
+    try:
+        database = SQLiteDatabase.from_bytes(await file.read())
+        return {"tables": list(database.schema())}
+    except (AppError, SQLiteDatabaseError, ValueError) as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    finally:
+        if database is not None:
+            database.close()

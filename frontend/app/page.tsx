@@ -33,6 +33,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState("");
   const [error, setError] = useState("");
+  const [tables, setTables] = useState<string[]>([]);
 
   async function loadSample() {
     setError(""); setStage("Fetching the portfolio dataset...");
@@ -41,9 +42,22 @@ export default function Home() {
       if (!response.ok) throw new Error("Could not load sample data");
       const blob = await response.blob();
       setFile(new File([blob], "sample_sales.csv", { type: "text/csv" }));
-      setSource("csv");
+      setSource("csv"); setTables([]);
       setQuestion("Show revenue by region"); setStage("Sample data ready to analyze.");
     } catch (err) { setStage(""); setError("Sample data could not be loaded. Check that the API is running on port 8001."); }
+  }
+
+  async function handleFile(fileToInspect: File | null) {
+    setFile(fileToInspect); setResult(null); setTables([]); setError("");
+    if (!fileToInspect || source !== "sqlite") return;
+    setStage("Inspecting SQLite tables...");
+    try {
+      const form = new FormData(); form.append("file", fileToInspect);
+      const response = await fetch(`${API_URL}/inspect/sqlite`, { method: "POST", body: form });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.detail ?? "SQLite inspection failed");
+      setTables(payload.tables ?? []); setStage(`${payload.tables?.length ?? 0} table(s) found. Ready to analyze.`);
+    } catch (err) { setStage(""); setError(`This SQLite file could not be inspected: ${err instanceof Error ? err.message : "check the file"}`); }
   }
 
   async function analyze() {
@@ -89,8 +103,9 @@ export default function Home() {
     <section className="workspace">
       <aside className="control-panel">
         <div className="panel-label">01 / SOURCE</div>
-        <div className="source-tabs"><button className={source === "csv" ? "active" : ""} onClick={() => setSource("csv")}><FileSpreadsheet size={16} /> CSV FILE</button><button className={source === "sqlite" ? "active" : ""} onClick={() => setSource("sqlite")}><Database size={16} /> SQLITE</button></div>
-        <label className="dropzone"><Upload size={21} /><strong>{file ? file.name : "Drop your data here"}</strong><small>{file ? `${(file.size / 1024).toFixed(1)} KB ready` : "CSV, DB, SQLITE · MAX 50 MB"}</small><input type="file" accept={source === "csv" ? ".csv" : ".db,.sqlite,.sqlite3"} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></label><button className="sample-button" onClick={loadSample}><WandSparkles size={14} /> LOAD SAMPLE DATA</button>
+        <div className="source-tabs"><button className={source === "csv" ? "active" : ""} onClick={() => { setSource("csv"); setTables([]); }}><FileSpreadsheet size={16} /> CSV FILE</button><button className={source === "sqlite" ? "active" : ""} onClick={() => setSource("sqlite")}><Database size={16} /> SQLITE</button></div>
+        <label className="dropzone"><Upload size={21} /><strong>{file ? file.name : "Drop your data here"}</strong><small>{file ? `${(file.size / 1024).toFixed(1)} KB ready` : "CSV, DB, SQLITE · MAX 50 MB"}</small><input type="file" accept={source === "csv" ? ".csv" : ".db,.sqlite,.sqlite3"} onChange={(e) => handleFile(e.target.files?.[0] ?? null)} /></label><button className="sample-button" onClick={loadSample}><WandSparkles size={14} /> LOAD SAMPLE DATA</button>
+        {source === "sqlite" && tables.length > 0 && <div className="table-list"><span>AVAILABLE TABLES</span>{tables.map((table) => <code key={table}>{table}</code>)}</div>}
         <div className="panel-label question-label">02 / ASK</div><textarea value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="What would you like to understand?" />
         {source === "csv" && <label className="toggle"><input type="checkbox" checked={useAI} onChange={(e) => setUseAI(e.target.checked)} /><span /> USE LOCAL AI INTERPRETER</label>}
         <button className="analyze" disabled={!file || loading} onClick={analyze}>{loading ? <><span className="button-loader" /> ANALYZING...</> : "ANALYZE DATA"}<ArrowUpRight size={17} /></button>
