@@ -77,6 +77,10 @@ Then open the local URL shown in the terminal, upload a CSV, and ask a question 
 
 The interface also includes a built-in sample sales dataset, so you can try the application without preparing a file first.
 
+## Local AI provider
+
+Ollama can provide local, no-API-key language-model interpretation. The project includes an `OllamaInterpreter` that requests structured analysis instructions and validates them as an `AnalysisRequest`. Calculations still run through the deterministic analysis service.
+
 ## Roadmap
 
 1. Project foundation and development standards
