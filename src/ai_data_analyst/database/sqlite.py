@@ -18,6 +18,18 @@ class SQLiteDatabase:
         self.path = str(path)
         self._connection = sqlite3.connect(self.path)
 
+    @classmethod
+    def from_bytes(cls, database_bytes: bytes) -> "SQLiteDatabase":
+        """Create an in-memory database from an uploaded SQLite file."""
+
+        database = cls()
+        try:
+            database._connection.deserialize(database_bytes)
+        except sqlite3.Error as error:
+            database.close()
+            raise SQLiteDatabaseError(f"Could not open SQLite database: {error}") from error
+        return database
+
     def close(self) -> None:
         """Close the underlying database connection."""
 
@@ -63,6 +75,14 @@ class SQLiteDatabase:
         except (pd.errors.DatabaseError, sqlite3.Error) as error:
             raise SQLiteDatabaseError(f"Query failed: {error}") from error
         return result.head(max_rows)
+
+    def table_dataframe(self, table_name: str, max_rows: int = 10_000) -> pd.DataFrame:
+        """Read one validated table into a dataframe."""
+
+        if table_name not in self.schema():
+            raise SQLiteDatabaseError(f"Unknown table: {table_name}")
+        escaped_name = table_name.replace('"', '""')
+        return self.query(f'SELECT * FROM "{escaped_name}"', max_rows=max_rows)
 
 
 def _validate_identifier(identifier: str) -> None:

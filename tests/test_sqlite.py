@@ -41,3 +41,19 @@ def test_query_rejects_unsafe_sql(database, sql) -> None:
 def test_query_rejects_invalid_row_limit(database) -> None:
     with pytest.raises(SQLiteDatabaseError, match="max_rows"):
         database.query("SELECT * FROM sales", max_rows=0)
+
+
+def test_uploaded_database_bytes_can_be_read(database) -> None:
+    source = SQLiteDatabase()
+    source.load_dataframe(pd.DataFrame({"value": [1, 2]}), "numbers")
+    raw_bytes = source._connection.serialize()
+    source.close()
+
+    uploaded = SQLiteDatabase.from_bytes(raw_bytes)
+    try:
+        assert uploaded.table_dataframe("numbers").to_dict(orient="records") == [
+            {"value": 1},
+            {"value": 2},
+        ]
+    finally:
+        uploaded.close()

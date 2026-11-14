@@ -7,6 +7,7 @@ import streamlit as st
 
 from ai_data_analyst.ai import OllamaInterpreter
 from ai_data_analyst.data import DataValidationError, profile_dataframe
+from ai_data_analyst.database import SQLiteDatabase, SQLiteDatabaseError
 from ai_data_analyst.pipeline import run_analysis
 
 st.set_page_config(page_title="AI Data Analyst Agent", page_icon="📊", layout="wide")
@@ -23,23 +24,38 @@ interpreter_choice = st.radio(
 
 data_source = st.radio(
     "Choose a data source",
-    ["Upload a CSV", "Use sample dataset"],
+    ["Upload a CSV", "Use sample dataset", "Upload SQLite database"],
     horizontal=True,
 )
 
-uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
+file_types = ["csv"] if data_source != "Upload SQLite database" else ["db", "sqlite", "sqlite3"]
+uploaded_file = st.file_uploader("Upload a file", type=file_types)
 
 if data_source == "Use sample dataset":
     sample_path = Path(__file__).parent / "examples" / "sample_sales.csv"
     dataframe = pd.read_csv(sample_path)
     st.success("Using the built-in sample sales dataset.")
+elif data_source == "Upload SQLite database" and uploaded_file is not None:
+    try:
+        database = SQLiteDatabase.from_bytes(uploaded_file.getvalue())
+        tables = list(database.schema())
+        if not tables:
+            st.error("This SQLite database does not contain any tables.")
+            st.stop()
+        selected_table = st.selectbox("Choose a table", tables)
+        st.caption(f"Tables found: {', '.join(tables)}")
+        dataframe = database.table_dataframe(selected_table)
+        st.success(f"Using SQLite table: {selected_table}")
+    except SQLiteDatabaseError as error:
+        st.error(f"We could not open this database: {error}")
+        st.stop()
 elif uploaded_file is not None:
     dataframe = pd.read_csv(uploaded_file)
 else:
     dataframe = None
 
 if dataframe is None:
-    st.info("Upload a CSV file or choose the sample dataset to begin your analysis.")
+    st.info("Upload a CSV, choose the sample dataset, or upload a SQLite database to begin.")
     st.stop()
 
 try:

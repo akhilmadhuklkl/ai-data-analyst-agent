@@ -89,6 +89,8 @@ The pipeline now also produces a grounded natural-language explanation based onl
 
 The project now includes a safe SQLite adapter. It can load a dataframe into a local table, inspect the schema, and run read-only `SELECT`, `WITH`, or `EXPLAIN` queries with row limits. Write and schema-modifying SQL is rejected.
 
+The Streamlit interface now accepts SQLite database uploads, shows available tables, and sends the selected table through the same analysis pipeline used for CSV files.
+
 ## Roadmap
 
 1. Project foundation and development standards
