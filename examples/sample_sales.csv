@@ -1,0 +1,10 @@
+date,product,region,units_sold,revenue
+2026-01-05,Laptop,India,4,4000
+2026-01-12,Phone,India,10,8000
+2026-01-18,Laptop,USA,6,6000
+2026-02-03,Tablet,India,8,4000
+2026-02-14,Phone,USA,12,9600
+2026-02-22,Laptop,UK,3,3000
+2026-03-04,Tablet,USA,7,3500
+2026-03-11,Phone,UK,9,7200
+2026-03-26,Laptop,India,5,5000

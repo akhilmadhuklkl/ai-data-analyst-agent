@@ -75,6 +75,8 @@ python -m streamlit run app.py
 
 Then open the local URL shown in the terminal, upload a CSV, and ask a question such as `Show revenue by region`.
 
+The interface also includes a built-in sample sales dataset, so you can try the application without preparing a file first.
+
 ## Roadmap
 
 1. Project foundation and development standards
