@@ -1,0 +1,33 @@
+# AI Data Analyst Agent
+
+An AI-powered data analyst that lets users upload CSV files or connect to a database, ask questions in plain English, and receive SQL, Python analysis, tables, and charts.
+
+## Project status
+
+🚧 In active development. Deployment will be added in a later phase.
+
+## Planned capabilities
+
+- Upload and inspect CSV data
+- Connect to a database
+- Ask data questions in natural language
+- Generate and execute safe, read-only SQL
+- Run controlled Python analysis
+- Generate charts and explain results
+- Recover from tool and data errors
+
+## Development approach
+
+This project is being built in small milestones. Each milestone will be tested, documented, committed, and pushed to GitHub.
+
+## Roadmap
+
+1. Project foundation and development standards
+2. CSV ingestion and dataset profiling
+3. Natural-language analysis workflow
+4. Safe SQL tool
+5. Python analysis tool
+6. Chart generation
+7. Agent orchestration and error recovery
+8. Portfolio-quality UI and documentation
+9. Deployment
