@@ -62,6 +62,23 @@ export default function Home() {
     finally { setLoading(false); setStage(""); }
   }
 
+  function downloadFile(content: string, filename: string, type: string) {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([content], { type }));
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  function exportTable() {
+    const csv = [columns.join(","), ...rows.map((row) => columns.map((column) => JSON.stringify(row[column] ?? "")).join(","))].join("\n");
+    downloadFile(csv, "nexus-analysis-results.csv", "text/csv");
+  }
+
+  function exportReport() {
+    downloadFile(JSON.stringify({ question, source, explanation: result?.explanation, sql: result?.sql, metrics: { rows: rows.length, fields: columns.length, measures: numericColumns.length }, columns, rows }, null, 2), "nexus-analysis-report.json", "application/json");
+  }
+
   const columns = result?.analysis?.columns ?? result?.columns ?? [];
   const rows = result?.analysis?.rows ?? result?.rows ?? [];
   const numericColumns = columns.filter((column) => rows.some((row) => typeof row[column] === "number"));
@@ -80,7 +97,7 @@ export default function Home() {
         {stage && <div className={`stage ${loading ? "active" : "ready"}`}><span />{stage}</div>}
         {error && <div className="error">{error}</div>}
       </aside>
-      <section className="results"><div className="panel-label">03 / INSIGHT</div>{!result && <div className="empty"><div className="empty-icon"><BarChart3 size={28} /></div><h2>Your analysis will appear here.</h2><p>Start with the sample question, or ask something specific about your own data.</p></div>}{result && <><div className="result-head"><div><h2>Analysis complete</h2><p>{result.explanation ?? "Your database query returned these results."}</p></div><span className="pill">{rows.length} ROWS</span></div><div className="metric-grid"><div><strong>{rows.length}</strong><span>RESULT ROWS</span></div><div><strong>{columns.length}</strong><span>DATA FIELDS</span></div><div><strong>{numericColumns.length}</strong><span>MEASURES</span></div></div><VisualSummary columns={columns} rows={rows} />{result.sql && <details><summary>VIEW GENERATED SQL</summary><pre>{result.sql}</pre></details>}<div className="table-wrap"><table><thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column) => <td key={column}>{String(row[column] ?? "—")}</td>)}</tr>)}</tbody></table></div></>}</section>
+      <section className="results"><div className="panel-label">03 / INSIGHT</div>{!result && <div className="empty"><div className="empty-icon"><BarChart3 size={28} /></div><h2>Your analysis will appear here.</h2><p>Start with the sample question, or ask something specific about your own data.</p></div>}{result && <><div className="result-head"><div><h2>Analysis complete</h2><p>{result.explanation ?? "Your database query returned these results."}</p></div><span className="pill">{rows.length} ROWS</span></div><div className="metric-grid"><div><strong>{rows.length}</strong><span>RESULT ROWS</span></div><div><strong>{columns.length}</strong><span>DATA FIELDS</span></div><div><strong>{numericColumns.length}</strong><span>MEASURES</span></div></div><VisualSummary columns={columns} rows={rows} />{result.sql && <details><summary>VIEW GENERATED SQL</summary><pre>{result.sql}</pre></details>}<div className="table-wrap"><table><thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column) => <td key={column}>{String(row[column] ?? "—")}</td>)}</tr>)}</tbody></table></div><div className="export-actions"><span>EXPORT RESULTS</span><button onClick={exportTable}>DOWNLOAD CSV</button><button onClick={exportReport}>DOWNLOAD REPORT</button></div></>}</section>
     </section>
     <footer>BUILT FOR CURIOUS MINDS <span>·</span> LOCAL-FIRST ANALYTICS</footer>
   </main>;
