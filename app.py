@@ -14,9 +14,11 @@ from ai_data_analyst.database import (
 )
 from ai_data_analyst.interpretation import explain_result
 from ai_data_analyst.models import AnalysisIntent, AnalysisRequest, ChartType
+from ai_data_analyst.observability import configure_logging
 from ai_data_analyst.visualization import create_chart
 
 services = ApplicationServices()
+configure_logging()
 
 st.set_page_config(page_title="AI Data Analyst Agent", page_icon="📊", layout="wide")
 

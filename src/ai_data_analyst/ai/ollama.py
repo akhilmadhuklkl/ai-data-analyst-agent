@@ -6,10 +6,14 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 from ai_data_analyst.models import AnalysisRequest
+from ai_data_analyst.observability import get_logger
 
 
 class OllamaError(RuntimeError):
     """Raised when the local Ollama service cannot produce a valid request."""
+
+
+logger = get_logger("ollama")
 
 
 @dataclass(frozen=True)
@@ -52,6 +56,7 @@ class OllamaInterpreter:
             method="POST",
         )
         try:
+            logger.info("ollama_request_started model=%s columns=%d", self.model, len(columns))
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
         except (OSError, URLError, json.JSONDecodeError) as error:
@@ -66,6 +71,8 @@ class OllamaInterpreter:
                 values["result_limit"] = 20
             if values.get("chart_type") in {"", "none", "null"}:
                 values["chart_type"] = None
-            return AnalysisRequest.from_dict(values)
+            result = AnalysisRequest.from_dict(values)
+            logger.info("ollama_request_completed intent=%s", result.intent.value)
+            return result
         except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
             raise OllamaError("Ollama returned an invalid analysis request") from error

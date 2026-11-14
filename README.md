@@ -124,6 +124,8 @@ Database results also receive a grounded explanation and a bar chart when the qu
 
 The reusable `ApplicationServices` layer keeps UI code separate from analysis behavior. GitHub Actions runs the test suite and Ruff checks on pushes and pull requests.
 
+The application uses namespaced logging for analysis, Ollama, and database lifecycle events. Logs record safe metadata such as row counts and intent; prompts, SQL text, uploaded data, and secrets are not logged.
+
 ## Roadmap
 
 1. Project foundation and development standards

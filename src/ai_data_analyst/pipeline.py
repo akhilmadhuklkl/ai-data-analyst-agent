@@ -10,9 +10,11 @@ from ai_data_analyst.analysis import AnalysisResult, analyze
 from ai_data_analyst.interpretation import explain_result
 from ai_data_analyst.interpreter import interpret_question
 from ai_data_analyst.models import AnalysisRequest
+from ai_data_analyst.observability import get_logger
 from ai_data_analyst.visualization import ChartResult, create_chart
 
 RequestInterpreter = Callable[[str, list[str]], AnalysisRequest]
+logger = get_logger("pipeline")
 
 
 @dataclass(frozen=True)
@@ -42,6 +44,11 @@ def run_analysis(
 ) -> PipelineResult:
     """Interpret and execute a question against a dataframe."""
 
+    logger.info(
+        "analysis_started columns=%d ai_interpreter=%s",
+        len(dataframe.columns),
+        interpreter is not None,
+    )
     request = (interpreter or interpret_question)(question, dataframe.columns.tolist())
     analysis_result = analyze(dataframe, request)
     chart = (
@@ -49,9 +56,15 @@ def run_analysis(
         if request.chart_type is not None
         else None
     )
-    return PipelineResult(
+    result = PipelineResult(
         request=request,
         analysis=analysis_result,
         explanation=explain_result(request, analysis_result),
         chart=chart,
     )
+    logger.info(
+        "analysis_completed intent=%s rows=%d",
+        request.intent.value,
+        len(result.analysis.rows),
+    )
+    return result
