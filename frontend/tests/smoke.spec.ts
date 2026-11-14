@@ -30,3 +30,16 @@ test("sample data flows through the API into analysis results", async ({ page })
   await expect(page.getByText("3 ROWS")).toBeVisible();
   await expect(page.getByText("VISUAL SUMMARY")).toBeVisible();
 });
+
+test("sample SQLite database exposes table schema", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "SQLITE" }).click();
+  await page.getByRole("button", { name: "LOAD SAMPLE DATABASE" }).click();
+  await expect(page.getByText("sample_sales.sqlite")).toBeVisible();
+  await expect(page.getByText("ANALYZE TABLE")).toBeVisible({ timeout: 15000 });
+
+  await page.locator("select").selectOption("sales");
+  await expect(page.getByText(/sales · 5 COLUMNS/)).toBeVisible();
+  await expect(page.getByText("revenue", { exact: true })).toBeVisible();
+});
