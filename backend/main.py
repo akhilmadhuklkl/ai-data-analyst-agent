@@ -76,11 +76,12 @@ async def analyze_sqlite(
 
 
 @app.post("/inspect/sqlite")
-async def inspect_sqlite(file: UploadFile = File(...)) -> dict[str, list[str]]:
+async def inspect_sqlite(file: UploadFile = File(...)) -> dict:
     database = None
     try:
         database = SQLiteDatabase.from_bytes(await file.read())
-        return {"tables": list(database.schema())}
+        schema = database.schema()
+        return {"tables": list(schema), "schema": schema}
     except (AppError, SQLiteDatabaseError, ValueError) as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     finally:
