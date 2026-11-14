@@ -7,6 +7,10 @@ type Result = { explanation?: string; analysis?: { columns: string[]; rows: Reco
 type ColumnInfo = { name: string; type: string };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8001";
+const EXAMPLES = {
+  csv: ["Show revenue by region", "Which product has the highest revenue?", "Summarize the dataset"],
+  sqlite: ["Show all sales records", "Compare revenue by region", "Find the top-performing product"],
+};
 
 function VisualSummary({ columns, rows }: { columns: string[]; rows: Record<string, unknown>[] }) {
   const numericColumn = columns.find((column) => rows.some((row) => typeof row[column] === "number"));
@@ -126,6 +130,7 @@ export default function Home() {
         {source === "sqlite" && !inspectingTables && tables.length === 0 && file && <div className="inspection-empty">No tables detected in this database.</div>}
         {source === "sqlite" && tables.length > 0 && <div className="table-list"><span>ANALYZE TABLE</span><select value={selectedTable} onChange={(e) => setSelectedTable(e.target.value)}><option value="">ALL TABLES</option>{tables.map((table) => <option key={table} value={table}>{table}</option>)}</select>{selectedTable && <div className="schema-card"><div className="schema-title">{selectedTable} · {schema[selectedTable]?.length ?? 0} COLUMNS</div>{schema[selectedTable]?.map((column) => <div className="schema-row" key={column.name}><code>{column.name}</code><span>{column.type}</span></div>)}</div>}</div>}
         <div className="panel-label question-label">02 / ASK</div><textarea value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="What would you like to understand?" />
+        <div className="example-questions"><span>TRY AN EXAMPLE</span>{EXAMPLES[source].map((example) => <button key={example} onClick={() => setQuestion(example)}>{example}</button>)}</div>
         {source === "csv" && <label className="toggle"><input type="checkbox" checked={useAI} onChange={(e) => setUseAI(e.target.checked)} /><span /> USE LOCAL AI INTERPRETER</label>}
         <button className="analyze" disabled={!file || loading} onClick={analyze}>{loading ? <><span className="button-loader" /> ANALYZING...</> : "ANALYZE DATA"}<ArrowUpRight size={17} /></button>
         {stage && <div className={`stage ${loading ? "active" : "ready"}`}><span />{stage}</div>}
