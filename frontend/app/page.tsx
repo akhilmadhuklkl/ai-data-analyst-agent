@@ -5,7 +5,7 @@ import { ArrowUpRight, BarChart3, Database, FileSpreadsheet, Sparkles, Upload, W
 
 type Result = { explanation?: string; analysis?: { columns: string[]; rows: Record<string, unknown>[] }; sql?: string; columns?: string[]; rows?: Record<string, unknown>[] };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8001";
 
 function VisualSummary({ columns, rows }: { columns: string[]; rows: Record<string, unknown>[] }) {
   const numericColumn = columns.find((column) => rows.some((row) => typeof row[column] === "number"));

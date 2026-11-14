@@ -23,6 +23,9 @@ outputs/
 htmlcov/
 .ruff_cache/
 .mypy_cache/
+.pytest-temp/
+*.tsbuildinfo
+frontend/AGENTS.md
 
 # IDE and OS files
 .vscode/

@@ -25,7 +25,7 @@ The current `app.py` Streamlit interface is intentionally retained as a legacy b
 Start the backend:
 
 ```powershell
-python -m uvicorn backend.main:app --reload --port 8000
+python -m uvicorn backend.main:app --reload --port 8001
 ```
 
 Install and start the frontend:
