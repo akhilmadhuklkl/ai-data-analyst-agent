@@ -45,5 +45,9 @@ jobs:
         run: npm ci
       - name: Type-check frontend
         run: npm run lint
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Run browser smoke tests
+        run: npm run test:e2e
       - name: Build frontend
         run: npm run build
