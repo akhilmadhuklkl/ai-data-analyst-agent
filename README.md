@@ -60,6 +60,8 @@ The deterministic analysis service can currently execute summary and grouped agg
 
 The visualization layer converts analysis results into serializable Plotly figures. The first supported chart types are bar, line, scatter, histogram, and table-style outputs.
 
+The first natural-language interpreter supports common rule-based questions involving summaries, grouped metrics, charts, top-N limits, and trends over time. It produces the same validated `AnalysisRequest` used by the analysis service.
+
 ## Roadmap
 
 1. Project foundation and development standards
