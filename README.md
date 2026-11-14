@@ -1,5 +1,7 @@
 # AI Data Analyst Agent
 
+[![Quality checks](https://github.com/akhilmadhuklkl/ai-data-analyst-agent/actions/workflows/test.yml/badge.svg)](https://github.com/akhilmadhuklkl/ai-data-analyst-agent/actions/workflows/test.yml)
+
 An AI-powered data analyst that lets users upload CSV files or connect to a database, ask questions in plain English, and receive SQL, Python analysis, tables, and charts.
 
 ## Portfolio summary
@@ -14,7 +16,7 @@ This project demonstrates a production-minded AI data workflow: local LLM interp
 - Safe read-only SQL generation and execution
 - Pandas analysis and Plotly charts
 - Grounded natural-language explanations
-- 49 automated tests and GitHub Actions CI
+- 55 automated tests, coverage reporting, and GitHub Actions CI
 
 See the [architecture document](docs/architecture.md) for the system design and safety boundaries.
 
@@ -70,7 +72,7 @@ python -m pip install -e ".[all]"
 Run the test suite:
 
 ```powershell
-python -m pytest
+python -m pytest --cov=ai_data_analyst --cov-report=term-missing
 ```
 
 Run code-quality checks:
@@ -78,6 +80,8 @@ Run code-quality checks:
 ```powershell
 python -m ruff check .
 ```
+
+The same backend checks plus frontend type-checking and production build run automatically in GitHub Actions for every push and pull request.
 
 Application code lives in `src/ai_data_analyst/`. Tests live in `tests/`.
 
