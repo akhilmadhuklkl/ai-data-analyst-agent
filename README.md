@@ -93,6 +93,8 @@ The Streamlit interface now accepts SQLite database uploads, shows available tab
 
 The local AI layer also includes an `OllamaSQLGenerator`. It receives a database schema, generates one SQL query, and sends it through the read-only SQL validator before execution.
 
+When a SQLite database and Local AI interpreter are selected in the UI, the generated SQL is shown before its safe query result is displayed.
+
 ## Roadmap
 
 1. Project foundation and development standards

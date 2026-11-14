@@ -11,3 +11,4 @@ def test_streamlit_entrypoint_exists() -> None:
     assert "Show revenue by region" in app_path.read_text(encoding="utf-8")
     assert "Local AI with Ollama" in app_path.read_text(encoding="utf-8")
     assert "Upload SQLite database" in app_path.read_text(encoding="utf-8")
+    assert "Generated SQL" in app_path.read_text(encoding="utf-8")

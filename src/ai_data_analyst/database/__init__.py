@@ -5,5 +5,12 @@ from ai_data_analyst.database.sqlite import (
     SQLiteDatabaseError,
     validate_read_only_sql,
 )
+from ai_data_analyst.database.workflow import DatabaseQueryResult, run_database_question
 
-__all__ = ["SQLiteDatabase", "SQLiteDatabaseError", "validate_read_only_sql"]
+__all__ = [
+    "DatabaseQueryResult",
+    "SQLiteDatabase",
+    "SQLiteDatabaseError",
+    "run_database_question",
+    "validate_read_only_sql",
+]

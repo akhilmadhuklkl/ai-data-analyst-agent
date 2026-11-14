@@ -7,7 +7,11 @@ import streamlit as st
 
 from ai_data_analyst.ai import OllamaInterpreter
 from ai_data_analyst.data import DataValidationError, profile_dataframe
-from ai_data_analyst.database import SQLiteDatabase, SQLiteDatabaseError
+from ai_data_analyst.database import (
+    SQLiteDatabase,
+    SQLiteDatabaseError,
+    run_database_question,
+)
 from ai_data_analyst.pipeline import run_analysis
 
 st.set_page_config(page_title="AI Data Analyst Agent", page_icon="📊", layout="wide")
@@ -86,22 +90,31 @@ st.caption("Try one of these: " + " · ".join(question_examples))
 if st.button("Analyse", type="primary", disabled=not question.strip()):
     with st.spinner("Analysing your data..."):
         try:
-            interpreter = (
-                OllamaInterpreter().interpret
-                if interpreter_choice == "Local AI with Ollama"
-                else None
-            )
-            result = run_analysis(dataframe, question, interpreter=interpreter)
+            if (
+                data_source == "Upload SQLite database"
+                and interpreter_choice == "Local AI with Ollama"
+            ):
+                database_result = run_database_question(database, question)
+                st.subheader("Generated SQL")
+                st.code(database_result.sql, language="sql")
+                st.subheader("Database result")
+                st.dataframe(database_result.dataframe, use_container_width=True)
+            else:
+                interpreter = (
+                    OllamaInterpreter().interpret
+                    if interpreter_choice == "Local AI with Ollama"
+                    else None
+                )
+                result = run_analysis(dataframe, question, interpreter=interpreter)
+                st.subheader("Analysis result")
+                st.caption(f"Interpreted as: **{result.request.intent.value}**")
+                st.info(result.explanation)
+                st.dataframe(result.analysis.rows, use_container_width=True)
+                if result.chart is not None:
+                    st.plotly_chart(result.chart.figure, use_container_width=True)
         except (ValueError, KeyError) as error:
             st.error(f"I could not answer that question: {error}")
             st.info(
                 "Try mentioning a metric and grouping column, for example: "
                 "'Show revenue by region'."
             )
-        else:
-            st.subheader("Analysis result")
-            st.caption(f"Interpreted as: **{result.request.intent.value}**")
-            st.info(result.explanation)
-            st.dataframe(result.analysis.rows, use_container_width=True)
-            if result.chart is not None:
-                st.plotly_chart(result.chart.figure, use_container_width=True)
