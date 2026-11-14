@@ -23,6 +23,8 @@ def run_database_question(
     database: SQLiteDatabase,
     question: str,
     generator=None,
+    *,
+    table_name: str | None = None,
 ) -> DatabaseQueryResult:
     """Generate and safely execute SQL for a database question."""
 
@@ -30,7 +32,12 @@ def run_database_question(
         from ai_data_analyst.ai.sql import OllamaSQLGenerator
 
         generator = OllamaSQLGenerator()
-    sql = generator.generate(question, database.schema())
+    schema = database.schema()
+    if table_name is not None:
+        if table_name not in schema:
+            raise ValueError(f"Unknown table: {table_name}")
+        schema = {table_name: schema[table_name]}
+    sql = generator.generate(question, schema)
     logger.info("database_query_generated sql_length=%d", len(sql))
     result = DatabaseQueryResult(sql=sql, dataframe=database.query(sql))
     logger.info("database_query_completed rows=%d", len(result.dataframe))

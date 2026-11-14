@@ -56,11 +56,12 @@ async def analyze_csv(
 async def analyze_sqlite(
     file: UploadFile = File(...),
     question: str = Form(...),
+    table_name: str | None = Form(None),
 ) -> dict:
     database = None
     try:
         database = SQLiteDatabase.from_bytes(await file.read())
-        result = services.analyze_database(database, question)
+        result = services.analyze_database(database, question, table_name=table_name)
         return {
             "sql": result.sql,
             "columns": result.dataframe.columns.tolist(),

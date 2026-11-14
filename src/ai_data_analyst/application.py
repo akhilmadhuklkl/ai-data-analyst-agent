@@ -28,7 +28,8 @@ class ApplicationServices:
         self,
         database: SQLiteDatabase,
         question: str,
+        table_name: str | None = None,
     ) -> DatabaseQueryResult:
         """Generate and execute a safe SQL question against a database."""
 
-        return run_database_question(database, question)
+        return run_database_question(database, question, table_name=table_name)
