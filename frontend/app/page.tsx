@@ -37,6 +37,7 @@ export default function Home() {
   const [tables, setTables] = useState<string[]>([]);
   const [selectedTable, setSelectedTable] = useState("");
   const [schema, setSchema] = useState<Record<string, ColumnInfo[]>>({});
+  const [inspectingTables, setInspectingTables] = useState(false);
 
   async function loadSample() {
     setError(""); setStage("Fetching the portfolio dataset...");
@@ -53,7 +54,7 @@ export default function Home() {
   async function handleFile(fileToInspect: File | null) {
     setFile(fileToInspect); setResult(null); setTables([]); setSelectedTable(""); setSchema({}); setError("");
     if (!fileToInspect || source !== "sqlite") return;
-    setStage("Inspecting SQLite tables...");
+    setInspectingTables(true); setStage("Inspecting SQLite tables...");
     try {
       const form = new FormData(); form.append("file", fileToInspect);
       const response = await fetch(`${API_URL}/inspect/sqlite`, { method: "POST", body: form });
@@ -61,6 +62,7 @@ export default function Home() {
       if (!response.ok) throw new Error(payload.detail ?? "SQLite inspection failed");
       setTables(payload.tables ?? []); setSchema(payload.schema ?? {}); setStage(`${payload.tables?.length ?? 0} table(s) found. Ready to analyze.`);
     } catch (err) { setStage(""); setError(`This SQLite file could not be inspected: ${err instanceof Error ? err.message : "check the file"}`); }
+    finally { setInspectingTables(false); }
   }
 
   async function analyze() {
@@ -109,6 +111,8 @@ export default function Home() {
         <div className="panel-label">01 / SOURCE</div>
         <div className="source-tabs"><button className={source === "csv" ? "active" : ""} onClick={() => { setSource("csv"); setTables([]); setSelectedTable(""); }}><FileSpreadsheet size={16} /> CSV FILE</button><button className={source === "sqlite" ? "active" : ""} onClick={() => setSource("sqlite")}><Database size={16} /> SQLITE</button></div>
         <label className="dropzone"><Upload size={21} /><strong>{file ? file.name : "Drop your data here"}</strong><small>{file ? `${(file.size / 1024).toFixed(1)} KB ready` : "CSV, DB, SQLITE · MAX 50 MB"}</small><input type="file" accept={source === "csv" ? ".csv" : ".db,.sqlite,.sqlite3"} onChange={(e) => handleFile(e.target.files?.[0] ?? null)} /></label><button className="sample-button" onClick={loadSample}><WandSparkles size={14} /> LOAD SAMPLE DATA</button>
+        {source === "sqlite" && inspectingTables && <div className="inspection-card"><span className="inspection-spinner" /><div><strong>Reading database structure</strong><small>Finding tables and columns...</small></div></div>}
+        {source === "sqlite" && !inspectingTables && tables.length === 0 && file && <div className="inspection-empty">No tables detected in this database.</div>}
         {source === "sqlite" && tables.length > 0 && <div className="table-list"><span>ANALYZE TABLE</span><select value={selectedTable} onChange={(e) => setSelectedTable(e.target.value)}><option value="">ALL TABLES</option>{tables.map((table) => <option key={table} value={table}>{table}</option>)}</select>{selectedTable && <div className="schema-card"><div className="schema-title">{selectedTable} · {schema[selectedTable]?.length ?? 0} COLUMNS</div>{schema[selectedTable]?.map((column) => <div className="schema-row" key={column.name}><code>{column.name}</code><span>{column.type}</span></div>)}</div>}</div>}
         <div className="panel-label question-label">02 / ASK</div><textarea value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="What would you like to understand?" />
         {source === "csv" && <label className="toggle"><input type="checkbox" checked={useAI} onChange={(e) => setUseAI(e.target.checked)} /><span /> USE LOCAL AI INTERPRETER</label>}
