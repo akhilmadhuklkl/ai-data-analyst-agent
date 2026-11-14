@@ -20,6 +20,31 @@ An AI-powered data analyst that lets users upload CSV files or connect to a data
 
 This project is being built in small milestones. Each milestone will be tested, documented, committed, and pushed to GitHub.
 
+## Local development
+
+Create and activate a virtual environment, then install the development dependencies:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[all]"
+```
+
+Run the test suite:
+
+```powershell
+python -m pytest
+```
+
+Run code-quality checks:
+
+```powershell
+python -m ruff check .
+```
+
+Application code lives in `src/ai_data_analyst/`. Tests live in `tests/`.
+
 ## Roadmap
 
 1. Project foundation and development standards
