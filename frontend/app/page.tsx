@@ -31,32 +31,35 @@ export default function Home() {
   const [useAI, setUseAI] = useState(true);
   const [result, setResult] = useState<Result | null>(null);
   const [loading, setLoading] = useState(false);
+  const [stage, setStage] = useState("");
   const [error, setError] = useState("");
 
   async function loadSample() {
-    setError("");
+    setError(""); setStage("Fetching the portfolio dataset...");
     try {
       const response = await fetch(`${API_URL}/sample-data`);
       if (!response.ok) throw new Error("Could not load sample data");
       const blob = await response.blob();
       setFile(new File([blob], "sample_sales.csv", { type: "text/csv" }));
       setSource("csv");
-      setQuestion("Show revenue by region");
-    } catch (err) { setError(err instanceof Error ? err.message : "Could not load sample data"); }
+      setQuestion("Show revenue by region"); setStage("Sample data ready to analyze.");
+    } catch (err) { setStage(""); setError("Sample data could not be loaded. Check that the API is running on port 8001."); }
   }
 
   async function analyze() {
     if (!file || !question.trim()) return;
-    setLoading(true); setError("");
+    setLoading(true); setError(""); setStage("Reading your dataset...");
     const form = new FormData(); form.append("file", file); form.append("question", question);
     if (source === "csv") form.append("use_local_ai", String(useAI));
     try {
+      setStage(source === "sqlite" ? "Inspecting the database schema..." : useAI ? "Asking the local analyst for a plan..." : "Planning the analysis...");
       const response = await fetch(`${API_URL}/analyze/${source}`, { method: "POST", body: form });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.detail ?? "Analysis failed");
+      setStage("Checking results and preparing the visual summary...");
       setResult(payload);
-    } catch (err) { setError(err instanceof Error ? err.message : "Analysis failed"); }
-    finally { setLoading(false); }
+    } catch (err) { setError(err instanceof Error && err.message ? `Analysis could not be completed: ${err.message}` : "Analysis could not be completed. Check the file and API connection."); }
+    finally { setLoading(false); setStage(""); }
   }
 
   const columns = result?.analysis?.columns ?? result?.columns ?? [];
@@ -73,7 +76,8 @@ export default function Home() {
         <label className="dropzone"><Upload size={21} /><strong>{file ? file.name : "Drop your data here"}</strong><small>{file ? `${(file.size / 1024).toFixed(1)} KB ready` : "CSV, DB, SQLITE · MAX 50 MB"}</small><input type="file" accept={source === "csv" ? ".csv" : ".db,.sqlite,.sqlite3"} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></label><button className="sample-button" onClick={loadSample}><WandSparkles size={14} /> LOAD SAMPLE DATA</button>
         <div className="panel-label question-label">02 / ASK</div><textarea value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="What would you like to understand?" />
         {source === "csv" && <label className="toggle"><input type="checkbox" checked={useAI} onChange={(e) => setUseAI(e.target.checked)} /><span /> USE LOCAL AI INTERPRETER</label>}
-        <button className="analyze" disabled={!file || loading} onClick={analyze}>{loading ? "ANALYZING..." : "ANALYZE DATA"}<ArrowUpRight size={17} /></button>
+        <button className="analyze" disabled={!file || loading} onClick={analyze}>{loading ? <><span className="button-loader" /> ANALYZING...</> : "ANALYZE DATA"}<ArrowUpRight size={17} /></button>
+        {stage && <div className={`stage ${loading ? "active" : "ready"}`}><span />{stage}</div>}
         {error && <div className="error">{error}</div>}
       </aside>
       <section className="results"><div className="panel-label">03 / INSIGHT</div>{!result && <div className="empty"><div className="empty-icon"><BarChart3 size={28} /></div><h2>Your analysis will appear here.</h2><p>Start with the sample question, or ask something specific about your own data.</p></div>}{result && <><div className="result-head"><div><h2>Analysis complete</h2><p>{result.explanation ?? "Your database query returned these results."}</p></div><span className="pill">{rows.length} ROWS</span></div><div className="metric-grid"><div><strong>{rows.length}</strong><span>RESULT ROWS</span></div><div><strong>{columns.length}</strong><span>DATA FIELDS</span></div><div><strong>{numericColumns.length}</strong><span>MEASURES</span></div></div><VisualSummary columns={columns} rows={rows} />{result.sql && <details><summary>VIEW GENERATED SQL</summary><pre>{result.sql}</pre></details>}<div className="table-wrap"><table><thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column) => <td key={column}>{String(row[column] ?? "—")}</td>)}</tr>)}</tbody></table></div></>}</section>
