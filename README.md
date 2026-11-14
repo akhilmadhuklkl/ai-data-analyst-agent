@@ -45,6 +45,15 @@ python -m ruff check .
 
 Application code lives in `src/ai_data_analyst/`. Tests live in `tests/`.
 
+## Current data workflow
+
+The data layer currently supports CSV files. It validates the file, loads it into a Pandas dataframe, and produces a dataset profile containing:
+
+- Row and column counts
+- Column names and detected data types
+- Missing-value counts
+- A small preview of the records
+
 ## Roadmap
 
 1. Project foundation and development standards
