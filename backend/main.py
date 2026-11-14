@@ -1,8 +1,8 @@
 """HTTP API for the AI Data Analyst Agent."""
 
+import os
 import sqlite3
 from io import BytesIO
-import os
 from pathlib import Path
 
 import pandas as pd
@@ -18,12 +18,6 @@ from ai_data_analyst.observability import configure_logging
 configure_logging()
 services = ApplicationServices()
 app = FastAPI(title="AI Data Analyst Agent API", version="0.1.0")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB", "50")) * 1024 * 1024
 cors_origins = [
@@ -34,6 +28,12 @@ cors_origins = [
     if origin.strip()
 ]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 async def _read_upload(file: UploadFile, allowed_extensions: set[str]) -> bytes:
     """Validate an upload name and size before handing it to a parser."""
