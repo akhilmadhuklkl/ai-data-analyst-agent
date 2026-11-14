@@ -2,6 +2,22 @@
 
 An AI-powered data analyst that lets users upload CSV files or connect to a database, ask questions in plain English, and receive SQL, Python analysis, tables, and charts.
 
+## Portfolio summary
+
+This project demonstrates a production-minded AI data workflow: local LLM interpretation, structured outputs, deterministic analysis, safe SQL execution, visualization, error handling, and automated tests.
+
+## Highlights
+
+- CSV and SQLite data sources
+- Local Ollama model support with no paid API key required
+- Rule-based fallback interpreter
+- Safe read-only SQL generation and execution
+- Pandas analysis and Plotly charts
+- Grounded natural-language explanations
+- 49 automated tests and GitHub Actions CI
+
+See the [architecture document](docs/architecture.md) for the system design and safety boundaries.
+
 ## Project status
 
 🚧 In active development. Deployment will be added in a later phase.
@@ -76,6 +92,15 @@ python -m streamlit run app.py
 Then open the local URL shown in the terminal, upload a CSV, and ask a question such as `Show revenue by region`.
 
 The interface also includes a built-in sample sales dataset, so you can try the application without preparing a file first.
+
+### Demo questions
+
+- `Show revenue by region`
+- `Create a bar chart of revenue by product`
+- `Show the top 2 revenue by product`
+- `Summarise this dataset`
+
+For SQLite mode with Local AI, try: `Show revenue by region` or `Create a bar chart of revenue by region`.
 
 ## Local AI provider
 
