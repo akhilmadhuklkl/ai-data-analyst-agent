@@ -6,7 +6,7 @@ def test_streamlit_entrypoint_exists() -> None:
 
     assert app_path.exists()
     assert "st.file_uploader" in app_path.read_text(encoding="utf-8")
-    assert "run_analysis" in app_path.read_text(encoding="utf-8")
+    assert "ApplicationServices" in app_path.read_text(encoding="utf-8")
     assert "Use sample dataset" in app_path.read_text(encoding="utf-8")
     assert "Show revenue by region" in app_path.read_text(encoding="utf-8")
     assert "Local AI with Ollama" in app_path.read_text(encoding="utf-8")

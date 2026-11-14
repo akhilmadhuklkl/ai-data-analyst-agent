@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from ai_data_analyst.ai.sql import OllamaSQLGenerator
 from ai_data_analyst.database.sqlite import SQLiteDatabase
 
 
@@ -19,9 +18,13 @@ class DatabaseQueryResult:
 def run_database_question(
     database: SQLiteDatabase,
     question: str,
-    generator: OllamaSQLGenerator | None = None,
+    generator=None,
 ) -> DatabaseQueryResult:
     """Generate and safely execute SQL for a database question."""
 
-    sql = (generator or OllamaSQLGenerator()).generate(question, database.schema())
+    if generator is None:
+        from ai_data_analyst.ai.sql import OllamaSQLGenerator
+
+        generator = OllamaSQLGenerator()
+    sql = generator.generate(question, database.schema())
     return DatabaseQueryResult(sql=sql, dataframe=database.query(sql))

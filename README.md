@@ -97,6 +97,8 @@ When a SQLite database and Local AI interpreter are selected in the UI, the gene
 
 Database results also receive a grounded explanation and a bar chart when the question includes `bar chart`.
 
+The reusable `ApplicationServices` layer keeps UI code separate from analysis behavior. GitHub Actions runs the test suite and Ruff checks on pushes and pull requests.
+
 ## Roadmap
 
 1. Project foundation and development standards
