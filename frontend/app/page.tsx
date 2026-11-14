@@ -7,6 +7,23 @@ type Result = { explanation?: string; analysis?: { columns: string[]; rows: Reco
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
 
+function VisualSummary({ columns, rows }: { columns: string[]; rows: Record<string, unknown>[] }) {
+  const numericColumn = columns.find((column) => rows.some((row) => typeof row[column] === "number"));
+  if (!numericColumn || rows.length === 0) return null;
+  const values = rows.map((row) => Number(row[numericColumn]) || 0);
+  const max = Math.max(...values, 1);
+  const labelColumn = columns.find((column) => column !== numericColumn) ?? numericColumn;
+
+  return <div className="visual-summary">
+    <div className="visual-heading"><span>VISUAL SUMMARY</span><small>{numericColumn.toUpperCase()}</small></div>
+    <div className="bars">{rows.slice(0, 8).map((row, index) => <div className="bar-row" key={`${String(row[labelColumn])}-${index}`}>
+      <span className="bar-label">{String(row[labelColumn] ?? `Row ${index + 1}`)}</span>
+      <div className="bar-track"><div className="bar-fill" style={{ width: `${Math.max((values[index] / max) * 100, 3)}%` }} /></div>
+      <span className="bar-value">{String(row[numericColumn] ?? "—")}</span>
+    </div>)}</div>
+  </div>;
+}
+
 export default function Home() {
   const [source, setSource] = useState<"csv" | "sqlite">("csv");
   const [file, setFile] = useState<File | null>(null);
@@ -46,7 +63,7 @@ export default function Home() {
         <button className="analyze" disabled={!file || loading} onClick={analyze}>{loading ? "ANALYZING..." : "ANALYZE DATA"}<ArrowUpRight size={17} /></button>
         {error && <div className="error">{error}</div>}
       </aside>
-      <section className="results"><div className="panel-label">03 / INSIGHT</div>{!result && <div className="empty"><div className="empty-icon"><BarChart3 size={28} /></div><h2>Your analysis will appear here.</h2><p>Start with the sample question, or ask something specific about your own data.</p></div>}{result && <><div className="result-head"><div><h2>Analysis complete</h2><p>{result.explanation ?? "Your database query returned these results."}</p></div><span className="pill">{rows.length} ROWS</span></div>{result.sql && <details><summary>VIEW GENERATED SQL</summary><pre>{result.sql}</pre></details>}<div className="table-wrap"><table><thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column) => <td key={column}>{String(row[column] ?? "—")}</td>)}</tr>)}</tbody></table></div></>}</section>
+      <section className="results"><div className="panel-label">03 / INSIGHT</div>{!result && <div className="empty"><div className="empty-icon"><BarChart3 size={28} /></div><h2>Your analysis will appear here.</h2><p>Start with the sample question, or ask something specific about your own data.</p></div>}{result && <><div className="result-head"><div><h2>Analysis complete</h2><p>{result.explanation ?? "Your database query returned these results."}</p></div><span className="pill">{rows.length} ROWS</span></div><VisualSummary columns={columns} rows={rows} />{result.sql && <details><summary>VIEW GENERATED SQL</summary><pre>{result.sql}</pre></details>}<div className="table-wrap"><table><thead><tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column) => <td key={column}>{String(row[column] ?? "—")}</td>)}</tr>)}</tbody></table></div></>}</section>
     </section>
     <footer>BUILT FOR CURIOUS MINDS <span>·</span> LOCAL-FIRST ANALYTICS</footer>
   </main>;
