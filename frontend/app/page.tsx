@@ -121,6 +121,7 @@ export default function Home() {
   return <main className="shell">
     <nav className="nav"><div className="brand"><span className="brand-mark"><Sparkles size={17} /></span> NEXUS <em>ANALYST</em></div><span className="status"><i /> LOCAL WORKSPACE</span></nav>
     <section className="hero"><div className="eyebrow">INTELLIGENCE FOR YOUR DATA <ArrowUpRight size={14} /></div><h1>Ask better questions.<br /><span>Find clearer answers.</span></h1><p>Upload a dataset, connect your thinking, and let your local analyst uncover the signal.</p></section>
+    <section className="workflow"><div><span>01</span><strong>CONNECT</strong><p>Bring a CSV or SQLite database.</p></div><div><span>02</span><strong>ASK</strong><p>Use plain English to explore it.</p></div><div><span>03</span><strong>UNDERSTAND</strong><p>Review grounded results and visuals.</p></div></section>
     <section className="workspace">
       <aside className="control-panel">
         <div className="panel-label">01 / SOURCE</div>
