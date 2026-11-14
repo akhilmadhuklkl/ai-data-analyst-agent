@@ -1,10 +1,12 @@
 """HTTP API for the AI Data Analyst Agent."""
 
 from io import BytesIO
+from pathlib import Path
 
 import pandas as pd
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from ai_data_analyst.application import ApplicationServices
 from ai_data_analyst.database import SQLiteDatabase, SQLiteDatabaseError
@@ -25,6 +27,15 @@ app.add_middleware(
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "ai-data-analyst-agent"}
+
+
+@app.get("/sample-data")
+def sample_data() -> FileResponse:
+    return FileResponse(
+        Path(__file__).resolve().parent.parent / "examples" / "sample_sales.csv",
+        media_type="text/csv",
+        filename="sample_sales.csv",
+    )
 
 
 @app.post("/analyze/csv")
