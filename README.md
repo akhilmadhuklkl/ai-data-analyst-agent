@@ -91,6 +91,8 @@ The project now includes a safe SQLite adapter. It can load a dataframe into a l
 
 The Streamlit interface now accepts SQLite database uploads, shows available tables, and sends the selected table through the same analysis pipeline used for CSV files.
 
+The local AI layer also includes an `OllamaSQLGenerator`. It receives a database schema, generates one SQL query, and sends it through the read-only SQL validator before execution.
+
 ## Roadmap
 
 1. Project foundation and development standards

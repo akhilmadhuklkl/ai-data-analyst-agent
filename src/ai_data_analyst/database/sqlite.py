@@ -66,7 +66,7 @@ class SQLiteDatabase:
     def query(self, sql: str, max_rows: int = 1_000) -> pd.DataFrame:
         """Execute one read-only SQL query with a row limit."""
 
-        _validate_read_only_sql(sql)
+        validate_read_only_sql(sql)
         if max_rows < 1 or max_rows > 10_000:
             raise SQLiteDatabaseError("max_rows must be between 1 and 10000")
 
@@ -90,7 +90,7 @@ def _validate_identifier(identifier: str) -> None:
         raise SQLiteDatabaseError(f"Invalid table name: {identifier}")
 
 
-def _validate_read_only_sql(sql: str) -> None:
+def validate_read_only_sql(sql: str) -> None:
     normalized = sql.strip().lower()
     if not normalized:
         raise SQLiteDatabaseError("SQL query must not be empty")
