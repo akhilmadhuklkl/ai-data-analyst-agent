@@ -84,6 +84,16 @@ python -m ruff check .
 
 The same backend checks plus frontend type-checking and production build run automatically in GitHub Actions for every push and pull request.
 
+## Production-like local run
+
+Docker configuration is included for a later deployment phase. With Docker Desktop running:
+
+```powershell
+docker compose up --build
+```
+
+Open [http://localhost:3000](http://localhost:3000). Stop the services with `docker compose down`.
+
 Application code lives in `src/ai_data_analyst/`. Tests live in `tests/`.
 
 ## Current data workflow
