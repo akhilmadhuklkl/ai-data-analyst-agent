@@ -6,7 +6,7 @@ The AI Data Analyst Agent converts a natural-language question into a validated 
 
 ```mermaid
 flowchart TD
-    User[User question] --> UI[Streamlit UI]
+    User[User question] --> UI[Next.js UI]
     UI --> Source{Data source}
     Source --> CSV[CSV loader]
     Source --> SQLite[SQLite adapter]
@@ -22,7 +22,7 @@ flowchart TD
     Query --> Result
     Result --> Explanation[Grounded explanation]
     Result --> Chart[Plotly chart]
-    Explanation --> Answer[Answer, table, and chart]
+    Explanation --> Answer[Answer, table, chart, and export]
     Chart --> Answer
 ```
 
@@ -49,8 +49,10 @@ flowchart TD
 ### Application layer
 
 - `pipeline.py` coordinates interpretation, analysis, explanation, and chart generation.
-- `application.py` exposes reusable services for Streamlit today and an API later.
-- `app.py` contains the Streamlit presentation layer.
+- `application.py` exposes reusable services for the Streamlit backup and FastAPI API.
+- `backend/main.py` contains the FastAPI presentation boundary.
+- `frontend/app/page.tsx` contains the Next.js presentation layer.
+- `app.py` remains the Streamlit backup interface.
 
 ## Safety boundaries
 

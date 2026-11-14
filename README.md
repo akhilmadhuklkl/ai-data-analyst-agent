@@ -19,6 +19,7 @@ This project demonstrates a production-minded AI data workflow: local LLM interp
 - 55 automated tests, coverage reporting, and GitHub Actions CI
 
 See the [architecture document](docs/architecture.md) for the system design and safety boundaries.
+See the [portfolio-readiness review](docs/portfolio-readiness.md) for completed capabilities and the remaining deployment gaps.
 
 The current `app.py` Streamlit interface is intentionally retained as a legacy backup while the new Next.js + FastAPI interface is developed.
 
