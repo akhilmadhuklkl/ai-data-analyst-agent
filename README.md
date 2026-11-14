@@ -84,6 +84,8 @@ python -m ruff check .
 
 The same backend checks plus frontend type-checking and production build run automatically in GitHub Actions for every push and pull request.
 
+The final deployment checklist is documented in [docs/portfolio-readiness.md](docs/portfolio-readiness.md).
+
 ## Production-like local run
 
 Docker configuration is included for a later deployment phase. With Docker Desktop running:

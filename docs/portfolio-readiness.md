@@ -8,6 +8,7 @@
 - Read-only SQL validation, row limits, shared error types, and safe logging boundaries.
 - Sample data, sample database, guided questions, visual summaries, exports, and responsive layout.
 - 55 Python tests, Ruff checks, frontend type-checking, production build, and GitHub Actions CI.
+- Docker Compose images build successfully, both services start healthy, and all 4 browser smoke tests pass against the containers.
 
 ## Remaining gaps before deployment
 
@@ -18,6 +19,27 @@
 5. Add browser-level tests for file upload, sample loading, analysis, and exports.
 6. Add a deployment smoke test and health-check monitoring.
 7. Document Ollama installation, model download, and CPU/memory expectations.
+
+## Deployment checklist
+
+### Verified locally
+
+- [x] Backend image builds
+- [x] Frontend image builds
+- [x] API healthcheck passes in Compose
+- [x] Frontend returns HTTP 200 in Compose
+- [x] CSV browser workflow passes against containers
+- [x] SQLite browser workflow passes against containers
+
+### Required before public deployment
+
+- [ ] Choose a hosting platform and configure the frontend/API services.
+- [ ] Set `NEXT_PUBLIC_API_URL` to the hosted API URL during the frontend build.
+- [ ] Set `CORS_ORIGINS` to the exact hosted frontend origin.
+- [ ] Set an appropriate `MAX_UPLOAD_MB` limit for the hosting plan.
+- [ ] Decide whether public users may use Ollama or whether a hosted model provider is required.
+- [ ] Add authentication, rate limiting, and request-level monitoring.
+- [ ] Run the browser smoke suite against the deployed URL.
 
 ## Recommended deployment order
 
