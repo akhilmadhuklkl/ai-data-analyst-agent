@@ -58,6 +58,8 @@ The analysis layer also defines a validated `AnalysisRequest`. This is the inter
 
 The deterministic analysis service can currently execute summary and grouped aggregation requests. It returns structured rows that can later be rendered as tables or charts.
 
+The visualization layer converts analysis results into serializable Plotly figures. The first supported chart types are bar, line, scatter, histogram, and table-style outputs.
+
 ## Roadmap
 
 1. Project foundation and development standards
