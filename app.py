@@ -6,13 +6,17 @@ import pandas as pd
 import streamlit as st
 
 from ai_data_analyst.ai import OllamaInterpreter
+from ai_data_analyst.analysis import AnalysisResult
 from ai_data_analyst.data import DataValidationError, profile_dataframe
 from ai_data_analyst.database import (
     SQLiteDatabase,
     SQLiteDatabaseError,
     run_database_question,
 )
+from ai_data_analyst.interpretation import explain_result
+from ai_data_analyst.models import AnalysisIntent, AnalysisRequest, ChartType
 from ai_data_analyst.pipeline import run_analysis
+from ai_data_analyst.visualization import create_chart
 
 st.set_page_config(page_title="AI Data Analyst Agent", page_icon="📊", layout="wide")
 
@@ -98,7 +102,20 @@ if st.button("Analyse", type="primary", disabled=not question.strip()):
                 st.subheader("Generated SQL")
                 st.code(database_result.sql, language="sql")
                 st.subheader("Database result")
+                database_analysis = AnalysisResult(
+                    intent=AnalysisIntent.AGGREGATION.value,
+                    columns=database_result.dataframe.columns.tolist(),
+                    rows=database_result.dataframe.to_dict(orient="records"),
+                )
+                database_request = AnalysisRequest(
+                    question=question,
+                    intent=AnalysisIntent.AGGREGATION,
+                )
+                st.info(explain_result(database_request, database_analysis))
                 st.dataframe(database_result.dataframe, use_container_width=True)
+                if "bar chart" in question.lower() and len(database_analysis.columns) >= 2:
+                    chart = create_chart(database_analysis, ChartType.BAR)
+                    st.plotly_chart(chart.figure, use_container_width=True)
             else:
                 interpreter = (
                     OllamaInterpreter().interpret

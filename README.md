@@ -95,6 +95,8 @@ The local AI layer also includes an `OllamaSQLGenerator`. It receives a database
 
 When a SQLite database and Local AI interpreter are selected in the UI, the generated SQL is shown before its safe query result is displayed.
 
+Database results also receive a grounded explanation and a bar chart when the question includes `bar chart`.
+
 ## Roadmap
 
 1. Project foundation and development standards
