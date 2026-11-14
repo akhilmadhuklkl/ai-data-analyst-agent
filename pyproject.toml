@@ -23,6 +23,9 @@ api = [
     "fastapi>=0.115,<1.0",
     "uvicorn[standard]>=0.32,<1.0",
 ]
+ui = [
+    "streamlit>=1.40,<2.0",
+]
 ai = [
     "openai>=1.50,<2.0",
 ]
@@ -32,7 +35,7 @@ dev = [
     "ruff>=0.8,<1.0",
 ]
 all = [
-    "ai-data-analyst-agent[analysis,api,ai,dev]",
+    "ai-data-analyst-agent[analysis,api,ai,dev,ui]",
 ]
 
 [tool.setuptools.packages.find]

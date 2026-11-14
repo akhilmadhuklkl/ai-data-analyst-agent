@@ -64,6 +64,17 @@ The first natural-language interpreter supports common rule-based questions invo
 
 The end-to-end `run_analysis` pipeline now connects interpretation, deterministic analysis, and optional chart generation into one structured response.
 
+## Run the local interface
+
+Install the full development environment and start Streamlit:
+
+```powershell
+python -m pip install -e ".[all]"
+python -m streamlit run app.py
+```
+
+Then open the local URL shown in the terminal, upload a CSV, and ask a question such as `Show revenue by region`.
+
 ## Roadmap
 
 1. Project foundation and development standards
