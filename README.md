@@ -85,6 +85,10 @@ The interface lets you choose between the fast rule-based interpreter and the lo
 
 The pipeline now also produces a grounded natural-language explanation based only on the calculated result rows.
 
+## Database support
+
+The project now includes a safe SQLite adapter. It can load a dataframe into a local table, inspect the schema, and run read-only `SELECT`, `WITH`, or `EXPLAIN` queries with row limits. Write and schema-modifying SQL is rejected.
+
 ## Roadmap
 
 1. Project foundation and development standards
